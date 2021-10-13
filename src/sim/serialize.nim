@@ -1,10 +1,10 @@
 # Serialize and deserialize
 
 from std/json import parseJson, `{}`, `{}=`, JsonNode, `$`
-from pkg/parsetoml import parseFile, toJson
+# from pkg/parsetoml import parseFile, toJson
 from pkg/yaml import initYamlParser, parse, constructJson, YamlStreamError,
                      YamlParserError, `$`
-
+export json.`$`
 import sim/base
 
 proc yamlToJson(data: string): JsonNode =

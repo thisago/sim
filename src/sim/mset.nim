@@ -12,6 +12,7 @@ proc setFile(file: string; format: DataFormat; keys: seq[string]; value: string)
   showFile filename, format
   var data = file.readFile.deserialize format
   data.setVal(keys, value)
+  file.writeFile $data
 
 proc set*(files: seq[string]; lang = $dfUnknown; keys, value: string) =
   ## Set the value of key

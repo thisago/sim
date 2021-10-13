@@ -4,7 +4,7 @@ Changes
 
 ## Version 0.2.0 (??/10/2021)
 
-- Adding `set` command
+- Added `set` command
 
 ---
 

@@ -10,6 +10,8 @@
 <!-- Bulk serialized data file manipulation -->
 A CLI tool to manipulate your serialized data files
 
+**Note:** This project is not mainteined anymore
+
 Supported editing formats:
 - [x] JSON
 - [ ] YAML

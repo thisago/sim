@@ -72,25 +72,82 @@ func getLang*(file, forcedLang: string): DataFormat =
   else:
     result = parseDataFormat forcedLang
 
-from std/json import JsonNode, `{}`, hasKey
+# from std/json import JsonNode, `{}`, hasKey, newJArray, newJObject, `{}=`,
+#                      `%`, `[]`
+# from std/json import `$`
+import std/json
 from std/strutils import split, parseInt
 
 func parseKeys*(selector: string): seq[string] =
   result = selector.split selectorSplitter
 
+func isNumber(val: string): tuple[isNum: bool; val: int] =
+  ## TODO: Do it in another way
+  try:
+    result.val = parseInt val
+    result.isNum = true
+  except:
+    result.isNum = false
+
+func hasKey(node: JsonNode; key: int): bool =
+  ## Checks if array has given index
+  try:
+    discard node[key]
+    result = true
+  except:
+    result = false
+
+func get(node: JsonNode; keys: seq[string]): JsonNode =
+  result = node
+  for key in keys:
+    let num = isNumber key
+    if num.isNum:
+      result = result{num.val}
+    else:
+      result = result{key}
+
+proc setVal*(node: JsonNode, key: int, value: JsonNode) =
+  assert(node.kind == JArray)
+  if node.len >= key:
+    node[$key] = value
+  else:
+    node.add value
+
+proc `{}=`*(node: JsonNode, key: int, value: JsonNode) =
+  ## Traverses the node and tries to set the value at the given location
+  ## to `value`. If any of the keys are missing, they are added.
+  var node = node
+  node.setVal key, value
+
 func setVal*(data: var JsonNode; keys: seq[string]; value: string) =
   var validKeys: seq[string]
   for i, key in keys:
-    if key != wildcardSelector:
-      if node.hasKey key:
-        validKeys.add key
+    let
+      num = isNumber key
+      currNode = data.get validKeys
+    if keys.len == i + 1:
+      if num.isNum:
+        raise newException(ValueError,
+          "Cannot set array index, to add, use '-k object.array -v newItem' to add new item to `object.array`")
       else:
-        if keys.len > i + 1:
-          try:
-            discard parseInt keys[i + 1]
-            node
-          except:
-            discard
-
-
-    debugEcho keys
+        if currNode{key}.kind == JArray:
+          data.get(validKeys){key}.add %value
+        else:
+          data.get(validKeys){key} = %value
+    else:
+      if key != wildcardSelector:
+        var hasKey = false
+        if num.isNum:
+          if currNode.hasKey num.val:
+            hasKey = true
+            validKeys.add key
+        else:
+          if currNode.hasKey key:
+            hasKey = true
+            validKeys.add key
+        if not hasKey:
+          if keys.len > i + 1:
+            data.get(validKeys){key} =
+              if isNumber(keys[i + 1]).isNum: newJArray()
+              else: newJObject()
+  # data.get(validKeys[0..^2]){validKeys[^1]} = %value
