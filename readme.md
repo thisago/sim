@@ -7,9 +7,17 @@
 # Serialized Information Editor (SIE) -->
 # SIM (Serialized Information Manipulator)
 
-Manipulate your serialized data files:
-- [ ] JSON
+<!-- Bulk serialized data file manipulation -->
+A CLI tool to manipulate your serialized data files
+
+Supported editing formats:
+- [x] JSON
 - [ ] YAML
 - [ ] TOML
 - [ ] XML
-  - [ ] HTML
+
+Supported preview formats:
+- [x] JSON
+- [ ] YAML
+- [ ] TOML
+- [ ] XML

@@ -3,19 +3,17 @@
 from std/os import splitFile
 
 import sim/base
+import sim/serialize
 
-proc viewFile(file: string; lang: DataType) =
+proc viewFile(file: string; format, previewLang: DataFormat) =
+  if not valid file:
+    return
   let filename = getFilename file
-  showFile filename, lang
-  echo lang
+  showFile filename, format
+  let data = file.readFile.deserialize format
+  data.show previewLang
 
-proc view*(files: seq[string]; lang = $dtUnknown) =
+proc view*(files: seq[string]; lang = $dfUnknown; previewLang = $dfJson) =
   ## Parse and pretty view data of files
   for file in files:
-    var language: DataType
-    if lang == $dtUnknown:
-      let parts = splitFile file
-      language = parseDataType parts.ext
-    else:
-      language = parseDataType lang
-    file.viewFile language
+    file.viewFile getLang(file, lang), parseDataFormat previewLang

@@ -11,6 +11,10 @@ srcDir        = "src"
 
 requires "nim >= 1.5.1"
 
+# Parsing libs
+requires "yaml"
+requires "parsetoml"
+
 # CLI
 requires "cligen"
 
